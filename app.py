@@ -18,29 +18,49 @@ class MyView(web.View):
         return web.HTTPForbidden()
 
 
-@routes.get('/500')
-async def err_500(request):
-    return web.HTTPInternalServerError()
+@routes.view("/500")
+class Excption500View(web.View):
+    async def get(self):
+        return web.HTTPInternalServerError()
+
+    async def post(self):
+        return web.HTTPInternalServerError()
 
 
-@routes.get('/501')
-async def err_501(request):
-    return web.HTTPNotImplemented()
+@routes.view("/501")
+class Excption501View(web.View):
+    async def get(self):
+        return web.HTTPNotImplemented()
+
+    async def post(self):
+        return web.HTTPNotImplemented()
 
 
-@routes.get('/502')
-async def err_502(request):
-    return web.HTTPBadGateway()
+@routes.view("/502")
+class Excption502View(web.View):
+    async def get(self):
+        return web.HTTPBadGateway()
+
+    async def post(self):
+        return web.HTTPBadGateway()
 
 
-@routes.get('/503')
-async def err_503(request):
-    return web.HTTPServiceUnavailable()
+@routes.view("/503")
+class Excption503View(web.View):
+    async def get(self):
+        return web.HTTPServiceUnavailable()
+
+    async def post(self):
+        return web.HTTPServiceUnavailable()
 
 
-@routes.get('/504')
-async def err_504(request):
-    return web.HTTPGatewayTimeout()
+@routes.view("/504")
+class Excption504View(web.View):
+    async def get(self):
+        return web.HTTPGatewayTimeout()
+
+    async def post(self):
+        return web.HTTPGatewayTimeout()
 
 
 @routes.get('/{name}')
