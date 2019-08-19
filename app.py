@@ -1,76 +1,20 @@
 import os
+import aiohttp_jinja2
+import jinja2
 
 from aiohttp import web
 
-routes = web.RouteTableDef()
-
-
-@routes.get('/')
-async def hello(request):
-    return web.Response(text="Hello, world")
-
-
-@routes.view("/view")
-class MyView(web.View):
-    async def get(self):
-        data = {'some': 'data'}
-        return web.json_response(data)
-
-    async def post(self):
-        return web.HTTPForbidden()
-
-
-@routes.view("/500")
-class Excption500View(web.View):
-    async def get(self):
-        return web.HTTPInternalServerError()
-
-    async def post(self):
-        return web.HTTPInternalServerError()
-
-
-@routes.view("/501")
-class Excption501View(web.View):
-    async def get(self):
-        return web.HTTPNotImplemented()
-
-    async def post(self):
-        return web.HTTPNotImplemented()
-
-
-@routes.view("/502")
-class Excption502View(web.View):
-    async def get(self):
-        return web.HTTPBadGateway()
-
-    async def post(self):
-        return web.HTTPBadGateway()
-
-
-@routes.view("/503")
-class Excption503View(web.View):
-    async def get(self):
-        return web.HTTPServiceUnavailable()
-
-    async def post(self):
-        return web.HTTPServiceUnavailable()
-
-
-@routes.view("/504")
-class Excption504View(web.View):
-    async def get(self):
-        return web.HTTPGatewayTimeout()
-
-    async def post(self):
-        return web.HTTPGatewayTimeout()
-
-
-@routes.get('/{name}')
-async def variable_handler(request):
-    return web.Response(
-        text="Hello, {}".format(request.match_info['name']))
+from family import db
+from family.db import init_pg, close_pg
+from family.views import routes
 
 
 app = web.Application()
+aiohttp_jinja2.setup(
+   app,
+   loader=jinja2.FileSystemLoader('tmpl'),
+)
 app.add_routes(routes)
+app.on_startup.append(init_pg)
+app.on_cleanup.append(close_pg)
 web.run_app(app, port=os.getenv('PORT'))
