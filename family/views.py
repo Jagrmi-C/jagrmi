@@ -26,13 +26,6 @@ async def index_db(request):
         questions = [dict(q) for q in records]
         return web.Response(text=str(questions))
 
-@routes.get('/{name}')
-@aiohttp_jinja2.template('index.html')
-async def variable_handler(request):
-    # return web.Response(
-    #     text="Hello, {}".format(request.match_info['name']))
-    return {}
-
 
 @routes.get('/')
 async def hello(request):
@@ -92,3 +85,11 @@ class Excption504View(web.View):
 
     async def post(self):
         return web.HTTPGatewayTimeout()
+
+
+@routes.get('/{name}')
+@aiohttp_jinja2.template('index.html')
+async def variable_handler(request):
+    # return web.Response(
+    #     text="Hello, {}".format(request.match_info['name']))
+    return {}
