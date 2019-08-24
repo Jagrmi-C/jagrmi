@@ -5,15 +5,14 @@ import aiohttp_jinja2
 from aiohttp import web
 
 from family import db
-from family.db import database_url
+from settings import DSN
 
 routes = web.RouteTableDef()
 
 
 @routes.get("/db")
 async def get_names(request):
-    conf = request.app["conf"]
-    connection = await aiopg.connect(database_url(conf))
+    connection = await aiopg.connect(DSN)
     async with connection.cursor() as cur:
         await cur.execute("SELECT * FROM test")
         res = await cur.fetchall()
@@ -21,7 +20,7 @@ async def get_names(request):
 
 @routes.get("/testselect")
 async def test_add_user(request):
-    # conn = await asyncpg.connect(dsn=database_url())
+    # conn = await asyncpg.connect(dsn=DSN)
     conn = request.app["pool"]
     res = await conn.fetch("SELECT * FROM test")
     return web.Response(text=str(res))

@@ -9,13 +9,6 @@ from sqlalchemy import (
     Integer, String, Date
 )
 
-def database_url(conf):
-    PORT = conf['port']
-    HOST = conf['host']
-    DB = conf['database']
-    USER = conf['user']
-    PASSWORD = conf['password']
-    return f"postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
 
 def create_conn(db_url):
     conn = psycopg2.connect(db_url, sslmode='require')
