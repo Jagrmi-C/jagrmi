@@ -104,3 +104,6 @@ aiotest/
 # mypy
 .mypy_cache/
 .vscode/settings.json
+
+# editors
+.vscode

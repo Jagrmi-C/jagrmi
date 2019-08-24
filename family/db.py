@@ -9,14 +9,12 @@ from sqlalchemy import (
     Integer, String, Date
 )
 
-def database_url():
-    config = configparser.ConfigParser()
-    config.read('config/test.jagrmi.config')
-    PORT = config['JagrmiDB']['port']
-    HOST = config['JagrmiDB']['host']
-    DB = config['JagrmiDB']['database']
-    USER = config['JagrmiDB']['user']
-    PASSWORD = config['JagrmiDB']['password']
+def database_url(conf):
+    PORT = conf['port']
+    HOST = conf['host']
+    DB = conf['database']
+    USER = conf['user']
+    PASSWORD = conf['password']
     return f"postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
 
 def create_conn(db_url):
@@ -31,36 +29,12 @@ meta = MetaData()
 test = Table(
     'test', meta,
 
-    # Column('id', Integer, primary_key=True),
     Column('name', String(200), nullable=False),
     Column('age', Integer, nullable=False)    
 )
 
-# question = Table(
-#     'question', meta,
 
-#     Column('id', Integer, primary_key=True),
-#     Column('question_text', String(200), nullable=False),
-#     Column('pub_date', Date, nullable=False)
-# )
-
-# choice = Table(
-#     'choice', meta,
-
-#     Column('id', Integer, primary_key=True),
-#     Column('choice_text', String(200), nullable=False),
-#     Column('votes', Integer, server_default="0", nullable=False),
-
-#     Column('question_id',
-#            Integer,
-#            ForeignKey('question.id', ondelete='CASCADE'))
-# )
-
-
-async def init_pg(app):
-    config = configparser.ConfigParser()
-    config.read('config/test.jagrmi.config')
-    conf = config['JagrmiDB']
+async def init_pg(app, conf):
     engine = await aiopg.sa.create_engine(
         database=conf['database'],
         user=conf['user'],
