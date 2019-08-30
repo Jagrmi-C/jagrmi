@@ -37,7 +37,7 @@ async def test_add_user(request):
 
 @routes.get('/')
 async def hello(request):
-    return web.Response(text="Hello, world")
+    return web.Response(text=f"Hello, world {DSN}")
 
 
 @routes.view("/view")

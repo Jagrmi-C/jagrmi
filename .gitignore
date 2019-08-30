@@ -111,3 +111,4 @@ aiotest/
 # other
 sertificates/
 settings_local.py
+alembic/.versions

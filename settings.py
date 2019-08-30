@@ -15,28 +15,29 @@ DEBUG = False
 # logger.addHandler(console)
 
 config = configparser.ConfigParser()
-config.read('config/test.jagrmi.config')
-conf = config['JagrmiDB']
-PORT = conf['port']
-HOST = conf['host']
-DB = conf['database']
-USER = conf['user']
-PASSWORD = conf['password']
+config.read("config/test.jagrmi.config")
+
+conf = config["JagrmiDB"]
+
+DATABASE = {
+    'database': conf['database'],
+    'password': conf['password'],
+    'user': conf['user'],
+    'host': conf['host'],
+    'port': conf['port'],
+}
 
 def database_url(conf):
+    PORT = conf["port"]
+    HOST = conf["host"]
+    DB = conf["database"]
+    USER = conf["user"]
+    PASSWORD = conf["password"]
     return f"postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
 
 DSN = database_url(conf)
 
-DATABASE = {
-    'database': DB,
-    'password': HOST,
-    'user': USER,
-    'host': HOST,
-    'port': PORT,
-}
-
 try:
-    from .settings_local import *  # noqa
+    from settings_local import *  # noqa
 except ImportError:
     pass

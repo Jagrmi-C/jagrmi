@@ -15,18 +15,6 @@ def create_conn(db_url):
     return conn
 
 
-# __all__ = ['question', 'choice']
-
-meta = MetaData()
-
-test = Table(
-    'test', meta,
-
-    Column('name', String(200), nullable=False),
-    Column('age', Integer, nullable=False)    
-)
-
-
 async def init_pg(app, conf):
     engine = await aiopg.sa.create_engine(
         database=conf['database'],
