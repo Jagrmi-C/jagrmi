@@ -14,7 +14,7 @@ routes = web.RouteTableDef()
 async def get_names(request):
     connection = await aiopg.connect(DSN)
     async with connection.cursor() as cur:
-        await cur.execute("SELECT * FROM test")
+        await cur.execute("SELECT * FROM person_table")
         res = await cur.fetchall()
         return web.Response(text=str(res))
 
@@ -22,8 +22,27 @@ async def get_names(request):
 async def test_add_user(request):
     # conn = await asyncpg.connect(dsn=DSN)
     conn = request.app["pool"]
-    res = await conn.fetch("SELECT * FROM test")
+    res = await conn.fetch("SELECT * FROM person_table")
     return web.Response(text=str(res))
+
+
+@routes.get("/testadd")
+async def test_add_person(request):
+    from family.models import Person
+    from datetime import datetime
+    # import pdb; pdb.set_trace()
+    name = "test2"
+    lastname = "tester2"
+    birthdate = datetime.now().strftime("%Y-%m-%d")
+    birthplace = "test2"
+    _sql = """
+            INSERT INTO person_table
+            (name, lastname, birthdate, birthplace)
+            VALUES ('test3', 'test3','2019-02-30' ,'test2'); 
+            SELECT * from person_table;
+            """
+    res = await request.app["pool"].execute(_sql)
+    return web.Response(text=f"Hello, world {res}")
 
 
 # @routes.get("/initdb")
