@@ -86,12 +86,17 @@ async def oauth_login(request):
         client_id=request.app.config.GOOGLE_ID,
         client_secret=request.app.config.GOOGLE_SECRET,
     )
+
+    redirect_url = request.url.origin().join(
+        request.app.router["oauth:login"].url_for()
+    )
+
     logger.debug("Start OAUTH2")
     if not request.url.query.get("code"):
         logger.debug("Code isn't exist")
         return web.HTTPFound(
             google_client.get_authorize_url(
-                redirect_uri=request.app.config.REDIRECT_URI,
+                redirect_uri=redirect_url,
                 scope="email profile",
             )
         )
@@ -102,7 +107,7 @@ async def oauth_login(request):
 
     token, data = await google_client.get_access_token(
         request.url.query["code"],
-        redirect_uri=request.app.config.REDIRECT_URI
+        redirect_uri=redirect_url,
     )
 
     logger.debug("Token {} was received successfully".format(
@@ -113,7 +118,7 @@ async def oauth_login(request):
     session['token'] = token
 
     logger.debug("Redirect URL: {}".format(
-        request.app.config.REDIRECT_URI
+        redirect_url
     ))
 
     return web.HTTPFound(request.app.router["oauth:complete"].url_for())

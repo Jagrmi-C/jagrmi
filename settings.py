@@ -6,6 +6,8 @@ BASE_DIR = os.path.dirname(__file__)
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
+BASE_URL = "https://jagrmiaiohttpserver.herokuapp.com"
+
 DEBUG = False
 
 # logger = logging.getLogger()
@@ -38,7 +40,6 @@ def database_url(conf):
 DSN = database_url(conf)
 
 SECRET_KEY='5Vqi6xKb-nBLmFkXjRdz0rWVq7Iv7_hvQdHdasQgTPU='
-REDIRECT_URI='http://localhost:8080/oauth/login'
 OAUTH_REDIRECT_PATH = '/oauth/login'
 
 GOOGLE_ID = '1037729643312-ka43qhgsf27emk7e32te1ijj3mv2n8k2.apps.googleusercontent.com'
