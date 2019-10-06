@@ -46,6 +46,12 @@ GOOGLE_SECRET = 'A6A3Ge0zk3VqDfiVrrt9pp_y'
 
 TEST_COUNT = 0
 
+# DELETE AFTER
+import logging
+
+FH_LEVEL = logging.ERROR
+CH_LEVEL = logging.ERROR
+
 try:
     from settings_local import *  # noqa
 except ImportError:

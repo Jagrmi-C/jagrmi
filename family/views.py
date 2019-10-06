@@ -1,4 +1,5 @@
 import logging
+import os
 
 import asyncpg
 import aiopg
@@ -7,7 +8,7 @@ import aiohttp_jinja2
 from aiohttp import web
 
 from family import db
-from settings import DSN
+from settings import DSN, FH_LEVEL, CH_LEVEL
 from aioauth_client import GoogleClient
 from aiohttp_session import get_session
 
@@ -15,13 +16,15 @@ from family import models
 
 routes = web.RouteTableDef()
 
+f_name = "log/views.log"
 
 logger = logging.getLogger("family.views")
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('log/views.log')
-fh.setLevel(logging.ERROR)
+os.makedirs(os.path.dirname(f_name), exist_ok=True)
+fh = logging.FileHandler(f_name, mode="a", encoding=None, delay=False)
+fh.setLevel(FH_LEVEL)
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+ch.setLevel(CH_LEVEL)
 
 formatter = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
