@@ -27,7 +27,7 @@ async def user_middleware(request, handler):
    request.user = None
    request.info = None
 
-   if session._mapping.get("display_name"):
+   if session.get("display_name"):
       # TODO not work in request inst
       request.id = session["google_id"]
       request.display_name = session["display_name"]
