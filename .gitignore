@@ -112,3 +112,4 @@ aiotest/
 sertificates/
 settings_local.py
 alembic/.versions
+family/1.json

@@ -34,3 +34,13 @@ heroku pg:pull postgresql-tapered-36826 familyT1
 
 psql -h rogue.db.elephantsql.com -p 5432 -U sjbyrear sjbyrear
 password: eF_AMcXhN55UDzQKC8n_Bz_RMTJ0gqjE
+
+
+### Autogenerate alembic
+alembic revision --autogenerate -m "Added account table"
+
+### Execute migration
+alembic upgrade head
+
+### Start application
+python app.py

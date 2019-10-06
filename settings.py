@@ -37,6 +37,15 @@ def database_url(conf):
 
 DSN = database_url(conf)
 
+SECRET_KEY='5Vqi6xKb-nBLmFkXjRdz0rWVq7Iv7_hvQdHdasQgTPU='
+REDIRECT_URI='http://localhost:8080/oauth/login'
+OAUTH_REDIRECT_PATH = '/oauth/login'
+
+GOOGLE_ID = '1037729643312-ka43qhgsf27emk7e32te1ijj3mv2n8k2.apps.googleusercontent.com'
+GOOGLE_SECRET = 'A6A3Ge0zk3VqDfiVrrt9pp_y'
+
+TEST_COUNT = 0
+
 try:
     from settings_local import *  # noqa
 except ImportError:
