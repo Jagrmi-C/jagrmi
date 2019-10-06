@@ -26,13 +26,17 @@ async def user_middleware(request, handler):
    session = await get_session(request=request)
    request.user = None
    request.info = None
+   req_info = request.match_info.get_info()
+   path = req_info.get('path')
+   # if not path:  # TODO analize
+   #    import ipdb; ipdb.set_trace()
 
    if session.get("display_name"):
       # TODO not work in request inst
       request.id = session["google_id"]
       request.display_name = session["display_name"]
       request.email = session["email"]
-   else:
+   elif path not in ("/oauth/login", "/oauth/complete"):
       return web.HTTPFound(
          request.app.router["oauth:login"].url_for()
          )
