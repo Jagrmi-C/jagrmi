@@ -47,6 +47,8 @@ async def init_app(is_test=False):
    setup(app=app, storage=EncryptedCookieStorage(
       secret_key=settings.SECRET_KEY
       ))
+   
+   app.middlewares.append(user_middleware)
 
    ssl_object = ssl.create_default_context(
       capath=r"sertificates/rds-combined-ca-bundle.pem")
