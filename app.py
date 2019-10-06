@@ -28,8 +28,9 @@ async def user_middleware(request, handler):
    request.info = None
 
    if session._mapping.get("display_name"):
+      # TODO not work in request inst
       request.id = session["google_id"]
-      request.displayName = session["display_name"]
+      request.display_name = session["display_name"]
       request.email = session["email"]
    else:
       return web.HTTPFound(

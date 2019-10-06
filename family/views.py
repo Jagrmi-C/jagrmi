@@ -52,6 +52,17 @@ async def test_add_user(request):
     return web.Response(text=str(res))
 
 
+@routes.get("/account", name="account")
+async def account_info(request):
+    session = await get_session(request=request)
+    data = {
+        'id': session["google_id"],
+        'user': session["display_name"],
+        'email': session["email"],
+    }
+    return web.json_response(data)
+
+
 @routes.get("/testadd")
 async def test_add_person(request):
     from family.models import Person
@@ -178,12 +189,12 @@ async def oauth_complete(request):
     logger.debug(
         "Add to current session information ({}).".format(display_name)
     )
-    return web.HTTPFound(request.app.router['testselect'].url_for())
+    return web.HTTPFound(request.app.router['account'].url_for())
 
 
 @routes.get('/')
 async def hello(request):
-    return web.Response(text=f"Hello, world {DSN}")
+    return web.Response(text=f"Hello, world. Site is in work!")
 
 
 @routes.view("/view")
