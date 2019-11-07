@@ -42,5 +42,8 @@ alembic revision --autogenerate -m "Added account table"
 ### Execute migration
 alembic upgrade head
 
+### Downgrade migration
+alembic downgrade "id revision"
+
 ### Start application
 python app.py

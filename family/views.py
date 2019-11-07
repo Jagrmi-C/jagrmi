@@ -35,6 +35,14 @@ ch.setFormatter(formatter)
 logger.addHandler(fh)
 logger.addHandler(ch)
 
+ERRORS_MAPPING = {
+    "500": web.HTTPInternalServerError,
+    "501": web.HTTPNotImplemented,
+    "502": web.HTTPBadGateway,
+    "503": web.HTTPServiceUnavailable,
+    "504": web.HTTPGatewayTimeout,
+}
+
 
 @routes.get("/db")
 async def get_names(request):
@@ -80,16 +88,6 @@ async def test_add_person(request):
             """
     res = await request.app["pool"].execute(_sql)
     return web.Response(text=f"Hello, world {res}")
-
-
-# @routes.get("/initdb")
-# async def index_db(request):
-#     async with request.app['db'].acquire() as conn:
-#         cursor = await conn.execute(db.test.select())
-#         records = await cursor.fetchall()
-#         questions = [dict(q) for q in records]
-#         return web.Response(text=str(questions))
-
 
 @routes.get("/oauth/login", name="oauth:login")
 async def oauth_login(request):
@@ -207,54 +205,26 @@ class MyView(web.View):
         return web.HTTPForbidden()
 
 
-@routes.view("/500")
-class Excption500View(web.View):
+@routes.view(r'/{tail:\d{3}}')
+class ExcptionTESTView(web.View):
     async def get(self):
-        return web.HTTPInternalServerError()
+        target = self.request.match_info['tail']
+        if ERRORS_MAPPING.get(target):
+            return ERRORS_MAPPING[target]()
+        else:
+            return web.Response(text="Hello, {}".format(target))
 
     async def post(self):
-        return web.HTTPInternalServerError()
-
-
-@routes.view("/501")
-class Excption501View(web.View):
-    async def get(self):
-        return web.HTTPNotImplemented()
-
-    async def post(self):
-        return web.HTTPNotImplemented()
-
-
-@routes.view("/502")
-class Excption502View(web.View):
-    async def get(self):
-        return web.HTTPBadGateway()
-
-    async def post(self):
-        return web.HTTPBadGateway()
-
-
-@routes.view("/503")
-class Excption503View(web.View):
-    async def get(self):
-        return web.HTTPServiceUnavailable()
-
-    async def post(self):
-        return web.HTTPServiceUnavailable()
-
-
-@routes.view("/504")
-class Excption504View(web.View):
-    async def get(self):
-        return web.HTTPGatewayTimeout()
-
-    async def post(self):
-        return web.HTTPGatewayTimeout()
+        target = self.request.match_info['tail']
+        if ERRORS_MAPPING.get(target):
+            return ERRORS_MAPPING[target]()
+        else:
+            return web.Response(text="Hello, {}".format(target))
 
 
 @routes.get('/{name}')
 @aiohttp_jinja2.template('index.html')
 async def variable_handler(request):
-    # return web.Response(
-    #     text="Hello, {}".format(request.match_info['name']))
-    return {}
+    return web.Response(
+        text="Hello, {}".format(request.match_info['name'])
+    )
