@@ -1,6 +1,8 @@
 import logging
 import os
 
+from datetime import datetime
+
 import asyncpg
 import aiopg
 import aiohttp_jinja2
@@ -44,6 +46,11 @@ ERRORS_MAPPING = {
 }
 
 
+@routes.get('/')
+async def hello(request):
+    return web.Response(text=f"Hello, world. Site is in work!")
+
+
 @routes.get("/db")
 async def get_names(request):
     connection = await aiopg.connect(DSN)
@@ -54,10 +61,30 @@ async def get_names(request):
 
 @routes.get("/testselect", name='testselect')
 async def test_add_user(request):
-    # conn = await asyncpg.connect(dsn=DSN)
     conn = request.app["pool"]
-    res = await conn.fetch("SELECT * FROM person_table")
+    res = await conn.fetch("SELECT * FROM person")
     return web.Response(text=str(res))
+
+
+@routes.get(r"/select/{tail:\d{1,3}}")
+async def partner_get_info(request):
+    try:
+        partner_id = request.match_info["tail"]
+        res = await request.app["pool"].fetchrow(
+            f"SELECT * FROM person WHERE id={partner_id}"
+        )
+        data = dict()
+        for k, val in res.items():
+            if type(val) == datetime:
+                val = val.strftime("%b %d %Y %H:%M:%S")
+            data[k] = val
+        return web.json_response(data)
+    except AttributeError:
+        return web.HTTPForbidden(text="Person isn't exist!")
+    except TypeError as exc:
+        return web.Response(text=exc.__str__(), status=501)
+    except Exception as exc:
+        return web.HTTPForbidden()
 
 
 @routes.get("/account", name="account")
@@ -188,11 +215,6 @@ async def oauth_complete(request):
         "Add to current session information ({}).".format(display_name)
     )
     return web.HTTPFound(request.app.router['account'].url_for())
-
-
-@routes.get('/')
-async def hello(request):
-    return web.Response(text=f"Hello, world. Site is in work!")
 
 
 @routes.view("/view")
