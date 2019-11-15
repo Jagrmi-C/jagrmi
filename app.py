@@ -31,12 +31,15 @@ async def user_middleware(request, handler):
    # if not path:  # TODO analize
    #    import ipdb; ipdb.set_trace()
 
+   if req_info.get('formatter') and req_info['formatter'] == "/{tail}":
+      path = "notcheck"
+
    if session.get("display_name"):
       # TODO not work in request inst
       request.id = session["google_id"]
       request.display_name = session["display_name"]
       request.email = session["email"]
-   elif path not in ("/oauth/login", "/oauth/complete", "/502"):
+   elif path not in ("/oauth/login", "/oauth/complete", "notcheck"):
       return web.HTTPFound(
          request.app.router["oauth:login"].url_for()
          )
