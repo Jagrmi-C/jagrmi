@@ -3,6 +3,7 @@ import os
 
 from datetime import datetime
 
+import asyncio
 import asyncpg
 import aiopg
 import aiohttp_jinja2
@@ -242,6 +243,30 @@ class ExcptionTESTView(web.View):
             return ERRORS_MAPPING[target]()
         else:
             return web.Response(text="Hello, {}".format(target))
+
+
+@routes.view(r'/timeout/{timeout:\d{2}}')
+class TimeOutView(web.View):
+
+    async def sleep_by_timeout(self):
+        str_time = self.request.match_info['timeout']
+        if str_time and str_time.isdigit():
+            sleep_time = int(str_time)
+            await asyncio.sleep(sleep_time)
+
+    async def get(self):
+        await self.sleep_by_timeout()
+
+        return web.Response(
+            text="Hello, Tester",
+        )
+
+    async def post(self):
+        await self.sleep_by_timeout()
+
+        return web.Response(
+            text="Hello, Tester",
+        )
 
 
 @routes.get('/{name}')

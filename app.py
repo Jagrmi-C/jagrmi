@@ -31,7 +31,12 @@ async def user_middleware(request, handler):
    # if not path:  # TODO analize
    #    import ipdb; ipdb.set_trace()
 
-   if req_info.get('formatter') and req_info['formatter'] == "/{tail}":
+   available_path = (
+      "/{tail}",
+      "/timeout/{timeout}"
+   )
+
+   if req_info.get('formatter') and req_info['formatter'] in available_path:
       path = "notcheck"
 
    if session.get("display_name"):
