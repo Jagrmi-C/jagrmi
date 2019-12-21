@@ -107,6 +107,7 @@ aiotest/
 
 # editors
 .vscode
+.github/
 
 # other
 sertificates/
