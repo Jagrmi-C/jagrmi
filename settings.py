@@ -1,5 +1,5 @@
 import configparser
-# import logging
+import logging
 import os
 
 BASE_DIR = os.path.dirname(__file__)
@@ -29,6 +29,7 @@ DATABASE = {
     'port': conf['port'],
 }
 
+
 def database_url(conf):
     PORT = conf["port"]
     HOST = conf["host"]
@@ -37,18 +38,18 @@ def database_url(conf):
     PASSWORD = conf["password"]
     return f"postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
 
+
 DSN = database_url(conf)
 
-SECRET_KEY='5Vqi6xKb-nBLmFkXjRdz0rWVq7Iv7_hvQdHdasQgTPU='
+
+SECRET_KEY = '5Vqi6xKb-nBLmFkXjRdz0rWVq7Iv7_hvQdHdasQgTPU='
 OAUTH_REDIRECT_PATH = '/oauth/login'
 
-GOOGLE_ID = '1037729643312-ka43qhgsf27emk7e32te1ijj3mv2n8k2.apps.googleusercontent.com'
+GOOGLE_ID = \
+    '1037729643312-ka43qhgsf27emk7e32te1ijj3mv2n8k2.apps.googleusercontent.com'
 GOOGLE_SECRET = 'A6A3Ge0zk3VqDfiVrrt9pp_y'
 
 TEST_COUNT = 0
-
-# DELETE AFTER
-import logging
 
 FH_LEVEL = logging.ERROR
 CH_LEVEL = logging.ERROR

@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
+
 class Person(Base):
     __tablename__ = 'person'
 
@@ -37,6 +38,7 @@ class Person(Base):
 
 #     user_id = sa.Column(sa.Integer, sa.ForeignKey('person_entity.id'), primary_key=True)
 #     user = relationship('PersonEntity')
+
 
 class UserGoogle(Base):
     __tablename__ = 'user_google'

@@ -7,6 +7,7 @@ import asyncio
 import asyncpg
 import aiopg
 import aiohttp_jinja2
+import sqlalchemy as sa
 
 from aiohttp import web
 
@@ -15,7 +16,7 @@ from settings import DSN, FH_LEVEL, CH_LEVEL
 from aioauth_client import GoogleClient
 from aiohttp_session import get_session
 
-from family import models
+from . import models
 
 routes = web.RouteTableDef()
 
@@ -56,15 +57,29 @@ async def hello(request):
 async def get_names(request):
     connection = await aiopg.connect(DSN)
     async with connection.cursor() as cur:
+        # await cur.execute(models.Person.__table__.select())
+        # await conn.execute(models.User.__table__.insert().values(**user))
+        # import pdb; pdb.set_trace()
+        # row = await (await conn.execute(tbl.select())).first()
         await cur.execute("SELECT * FROM person_table")
         res = await cur.fetchall()
         return web.Response(text=str(res))
+
 
 @routes.get("/testselect", name='testselect')
 async def test_add_user(request):
     conn = request.app["pool"]
     res = await conn.fetch("SELECT * FROM person")
     return web.Response(text=str(res))
+
+
+@routes.get("/initdb")
+async def index_db(request):
+    async with request.app['db'].acquire() as conn:
+        cursor = await conn.execute(db.test.select())
+        records = await cursor.fetchall()
+        questions = [dict(q) for q in records]
+        return web.Response(text=str(questions))
 
 
 @routes.get(r"/select/{tail:\d{1,3}}")
@@ -116,6 +131,7 @@ async def test_add_person(request):
             """
     res = await request.app["pool"].execute(_sql)
     return web.Response(text=f"Hello, world {res}")
+
 
 @routes.get("/oauth/login", name="oauth:login")
 async def oauth_login(request):
