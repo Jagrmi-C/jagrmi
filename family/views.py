@@ -1,4 +1,5 @@
 import logging
+import json
 import os
 
 from datetime import datetime
@@ -11,10 +12,10 @@ import sqlalchemy as sa
 
 from aiohttp import web
 
-from family import db
-from settings import DSN, FH_LEVEL, CH_LEVEL
 from aioauth_client import GoogleClient
 from aiohttp_session import get_session
+
+from settings import DSN, FH_LEVEL, CH_LEVEL
 
 from . import models
 
@@ -55,15 +56,59 @@ async def hello(request):
 
 @routes.get("/db")
 async def get_names(request):
-    connection = await aiopg.connect(DSN)
-    async with connection.cursor() as cur:
-        # await cur.execute(models.Person.__table__.select())
-        # await conn.execute(models.User.__table__.insert().values(**user))
-        # import pdb; pdb.set_trace()
-        # row = await (await conn.execute(tbl.select())).first()
-        await cur.execute("SELECT * FROM person_table")
-        res = await cur.fetchall()
-        return web.Response(text=str(res))
+    """Test get data from table"""
+    async with request.app.db.acquire() as conn:
+        async for row in conn.execute(models.UserGoogle.__table__.select()):
+            print(row.google_id, row.google_user)
+        row = await (await conn.execute(models.UserGoogle.__table__.select())).first()
+        print(row)
+    return web.Response(text='google')
+
+
+@routes.get(r'/person/{person:\d{1,3}}')
+async def get_data_person(request):
+    person = models.Person.__table__
+    person_fields = [
+        person.c.first_name,
+        person.c.last_name,
+        person.c.birth_date,
+    ]
+    person_id = request.match_info['person']
+    async with request.app.db.acquire() as conn:
+        query = (
+            sa.select(person_fields, use_labels=True).
+            # sa.select(["*"]).
+            where(models.Person.__table__.c.id == person_id)
+        )
+        async for row in conn.execute(query):
+            return web.Response(text=str(row))
+
+    return web.Response(text="Undefined person")
+
+
+@routes.view("/person")
+class PersonView(web.View):
+
+    async def post(self, *args, **kwargs):
+        raw_data = await self.request.content.read()
+        data = json.loads(raw_data)
+        async with self.request.app.db.acquire() as conn:
+            person = models.Person.__table__
+            # kwargs = {
+            #     "first_name": "Test1",
+            #     "last_name": "Test2",
+            #     "birth_date": datetime.now(),
+            #     "birth_place": "Minsk",
+            # }
+            query = (
+                sa.insert(person).values(**data)
+            )
+            async for row in conn.execute(query):
+                return web.Response(text="Success")
+
+        return web.Response(
+            text="Hello, Tester",
+        )
 
 
 @routes.get("/testselect", name='testselect')
@@ -71,15 +116,6 @@ async def test_add_user(request):
     conn = request.app["pool"]
     res = await conn.fetch("SELECT * FROM person")
     return web.Response(text=str(res))
-
-
-@routes.get("/initdb")
-async def index_db(request):
-    async with request.app['db'].acquire() as conn:
-        cursor = await conn.execute(db.test.select())
-        records = await cursor.fetchall()
-        questions = [dict(q) for q in records]
-        return web.Response(text=str(questions))
 
 
 @routes.get(r"/select/{tail:\d{1,3}}")

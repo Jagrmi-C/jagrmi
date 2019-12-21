@@ -2,9 +2,12 @@ from datetime import datetime
 
 # from sqlalchemy import create_engine
 import sqlalchemy as sa
+from aiopg.sa import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy.orm import relationship
+
+from settings import DSN
 
 Base = declarative_base()
 
@@ -71,3 +74,15 @@ class Country(Base):
 
     def __repr__(self):
         return '<Country: {} {}>'.format(self.is_active, self.name)
+
+
+async def setup(app):
+    engine = await create_engine(DSN)
+    engine.Base = Base
+    app.db = engine
+
+
+async def close(app):
+    app.db.close()
+    await app.db.wait_closed()
+    app.db = None

@@ -16,9 +16,7 @@ from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
 import settings
 
-from family import db
-from family.db import init_pg, close_pg
-from family.views import routes
+from family import models, views
 
 
 @web.middleware
@@ -33,7 +31,7 @@ async def user_middleware(request, handler):
 
    available_path = (
       "/{tail}",
-      "/timeout/{timeout}"
+      "/timeout/{timeout}",
    )
 
    if req_info.get('formatter') and req_info['formatter'] in available_path:
@@ -44,7 +42,7 @@ async def user_middleware(request, handler):
       request.id = session["google_id"]
       request.display_name = session["display_name"]
       request.email = session["email"]
-   elif path not in ("/oauth/login", "/oauth/complete", "notcheck"):
+   elif path not in ("/oauth/login", "/oauth/complete", "/person", "notcheck"):
       return web.HTTPFound(
          request.app.router["oauth:login"].url_for()
          )
@@ -76,9 +74,13 @@ async def init_app(is_test=False):
       app,
       loader=jinja2.FileSystemLoader('tmpl'),
    )
-   app.add_routes(routes)
+   app.add_routes(views.routes)
    # app.router.add_static('/static/', path='/static/', name='static')
    app.config = settings
+
+   await models.setup(app)
+   app.on_cleanup.append(models.close)
+
    return app
 
 if __name__ == '__main__':
