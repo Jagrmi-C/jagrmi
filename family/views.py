@@ -111,6 +111,21 @@ class PersonView(web.View):
         )
 
 
+@routes.view("/receiver")
+class ReceiverView(web.View):
+
+    async def get(self):
+        return web.json_response("GET")
+
+    async def post(self, *args, **kwargs):
+        raw_data = await self.request.content.read()
+        data = json.loads(raw_data)
+
+        return web.Response(
+            text=f"POST, {data}",
+        )
+
+
 @routes.get("/testselect", name='testselect')
 async def test_add_user(request):
     conn = request.app["pool"]
