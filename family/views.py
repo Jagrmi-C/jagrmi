@@ -119,10 +119,10 @@ class ReceiverView(web.View):
 
     async def post(self, *args, **kwargs):
         raw_data = await self.request.content.read()
-        data = json.loads(raw_data)
+        # data = json.loads(raw_data)
 
         return web.Response(
-            text=f"POST, {data}",
+            text=f"POST, {raw_data}",
         )
 
 
