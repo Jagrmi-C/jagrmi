@@ -42,7 +42,9 @@ async def user_middleware(request, handler):
       request.id = session["google_id"]
       request.display_name = session["display_name"]
       request.email = session["email"]
-   elif path not in ("/oauth/login", "/oauth/complete", "/person", "notcheck"):
+   elif path not in (
+      "/oauth/login", "/oauth/complete", "/person", "notcheck", "/receiver"
+   ):
       return web.HTTPFound(
          request.app.router["oauth:login"].url_for()
          )
