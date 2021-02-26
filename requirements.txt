@@ -1,6 +1,6 @@
 aioauth-client==0.17.3
 aiodns==1.1.1
-aiohttp==3.6.2
+aiohttp==3.7.4
 aiohttp-jinja2==0.14.0
 aiohttp-session==2.8.0
 aiopg==1.0.0
